@@ -23,16 +23,13 @@ export class UsersController {
     private authService: AuthService,
   ) {}
 
+  @UseGuards(AuthGuard)
   @Get(':id')
   async getUserInfo(@Headers() headers: any, @Param('id') userId: string) {
-    const jwtString = headers.authorization.split('Bearer ')[1];
-    // const { userId } =
-    await this.authService.verify(jwtString);
     return this.usersService.getUserInfo(userId);
   }
 
   @Post()
-  @UseGuards(AuthGuard)
   async createUser(@Body() dto: CreateUserDto): Promise<void> {
     const { name, email, password } = dto;
     await this.usersService.createUser(name, email, password);
