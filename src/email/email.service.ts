@@ -5,7 +5,12 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
-import { EMAIL_PASSWORD, SENDER_EMAIL } from 'src/const';
+import {
+  EMAIL_AUTH_PASSWORD,
+  EMAIL_AUTH_USER,
+  EMAIL_BASE_URL,
+  EMAIL_SERVICE,
+} from 'src/const';
 
 interface EmailOptions {
   to: string;
@@ -21,12 +26,10 @@ export class EmailService {
     @InjectRepository(UserEntity) private userEntity: Repository<UserEntity>,
   ) {
     this.transporter = nodemailer.createTransport({
-      service: 'Gmail',
+      service: EMAIL_SERVICE,
       auth: {
-        user: SENDER_EMAIL,
-        pass: EMAIL_PASSWORD,
-        // user: 'lovelyoch123@gmail.com', // TODO: config
-        // pass: 'nwivmbvqgwrfdmhw', // TODO: config
+        user: EMAIL_AUTH_USER,
+        pass: EMAIL_AUTH_PASSWORD,
       },
     });
   }
@@ -35,7 +38,7 @@ export class EmailService {
     emailAddress: string,
     signupVerifyToken: string,
   ) {
-    const baseUrl = 'http://localhost:3000'; // TODO: config
+    const baseUrl = EMAIL_BASE_URL;
 
     const url = `${baseUrl}/users/email-verify?signupVerifyToken=${signupVerifyToken}`;
 
