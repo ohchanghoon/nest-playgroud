@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EmailService } from 'src/email/email.service';
 import { Repository } from 'typeorm';
@@ -9,27 +9,38 @@ import * as uuid from 'uuid';
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(UserEntity) private userEntity: Repository<UserEntity>,
+    @InjectRepository(UserEntity)
+    private usersRepository: Repository<UserEntity>,
     private emailService: EmailService,
   ) {}
   async create(createUserDto: CreateUserDto) {
-    this.userEntity.save(createUserDto);
+    this.usersRepository.save(createUserDto);
 
     // return 'This action adds a new user';
   }
 
   async createUser(name: string, email: string, password: string) {
-    await this.checkUserExists(email);
+    const userExist = await this.checkUserExists(email);
+    // console.log(userExist);
 
+    if (userExist) {
+      throw new UnprocessableEntityException('해당 이메일로는 가입 불가');
+    }
     const signupVerifyToken = uuid.v1();
-    console.log(signupVerifyToken);
 
     await this.saveUser(name, email, password, signupVerifyToken);
     await this.sendMemberJoinEmail(email, signupVerifyToken);
   }
 
-  private checkUserExists(email: string) {
-    return false; // TODO: DB 연동 후 구현
+  private async checkUserExists(emailAddress: string): Promise<boolean> {
+    const user = await this.usersRepository.findOne({
+      where: {
+        email: emailAddress,
+      },
+    });
+
+    if (!user) return false;
+    return true;
   }
 
   private async saveUser(
@@ -38,7 +49,12 @@ export class UsersService {
     password: string,
     signupVerifyToken: string,
   ) {
-    await this.userEntity.save({ name, email, password, signupVerifyToken });
+    await this.usersRepository.save({
+      name,
+      email,
+      password,
+      signupVerifyToken,
+    });
   }
 
   private async sendMemberJoinEmail(email: string, signupVerifyToken: string) {
