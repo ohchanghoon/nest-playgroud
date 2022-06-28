@@ -5,7 +5,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
-import { EMAIL_PASSWORD, SENDER_EMAIL } from 'src/users/const';
+import { EMAIL_PASSWORD, SENDER_EMAIL } from 'src/const';
 
 interface EmailOptions {
   to: string;
