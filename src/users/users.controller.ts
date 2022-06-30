@@ -15,6 +15,11 @@ import { UserLoginDto } from './dto/user-login.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { AuthGuard } from './auth/auth.guard';
 import { AuthService } from 'src/auth/auth.service';
+import { UserData } from './users.decorate';
+interface User {
+  name: string;
+  email: string;
+}
 
 @Controller('users')
 export class UsersController {
@@ -22,6 +27,11 @@ export class UsersController {
     private readonly usersService: UsersService,
     private authService: AuthService,
   ) {}
+
+  @Get()
+  getHello(@UserData('email') user: User) {
+    console.log(user);
+  }
 
   @UseGuards(AuthGuard)
   @Get(':id')
