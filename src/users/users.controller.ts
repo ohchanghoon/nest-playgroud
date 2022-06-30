@@ -9,6 +9,9 @@ import {
   Delete,
   UseGuards,
   ValidationPipe,
+  LoggerService,
+  Inject,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -20,6 +23,7 @@ import { UserData } from './users.decorate';
 import { IsString } from 'class-validator';
 import { Roles } from './auth/roles.decorator';
 import { ClassRolesGuard } from './auth/classRoles.guard';
+import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 // interface User {
 //   name: string;
 //   email: string;
@@ -35,6 +39,8 @@ class UserEntity {
 @Controller('users')
 export class UsersController {
   constructor(
+    @Inject(WINSTON_MODULE_NEST_PROVIDER)
+    private readonly logger: LoggerService,
     private readonly usersService: UsersService,
     private authService: AuthService,
   ) {}
@@ -66,7 +72,20 @@ export class UsersController {
   @Roles('admin')
   async createUser(@Body() dto: CreateUserDto): Promise<void> {
     const { name, email, password } = dto;
+    this.printLoggerServiceLog(dto);
     await this.usersService.createUser(name, email, password);
+  }
+
+  private printLoggerServiceLog(dto) {
+    try {
+      throw new InternalServerErrorException('test');
+    } catch (err) {
+      this.logger.error('error : ' + JSON.stringify(dto), err.stack);
+    }
+    this.logger.warn('warn: ' + JSON.stringify(dto));
+    this.logger.log('log: ' + JSON.stringify(dto));
+    this.logger.verbose('verbose: ' + JSON.stringify(dto));
+    this.logger.debug('debug: ' + JSON.stringify(dto));
   }
 
   @Post('/email-verify')
