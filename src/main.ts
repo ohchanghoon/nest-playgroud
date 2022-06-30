@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { AppModule } from './app.module';
+import { LoggingInterceptor, TransformInterceptor } from './interceptor';
 import { AuthGuard } from './users/auth/auth.guard';
 
 async function bootstrap() {
@@ -12,6 +13,10 @@ async function bootstrap() {
     new ValidationPipe({
       transform: true,
     }),
+  );
+  app.useGlobalInterceptors(
+    new LoggingInterceptor(),
+    new TransformInterceptor(),
   );
   await app.listen(3000);
 }
