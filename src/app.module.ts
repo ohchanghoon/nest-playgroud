@@ -18,6 +18,8 @@ import {
 } from 'nest-winston';
 // import { ExceptionModule } from './exception/exception.module';
 import { LoggingModule } from './logging/logging.module';
+import { BatchModule } from './batch/batch.module';
+import { TaskService } from './batch/task.service';
 
 @Module({
   imports: [
@@ -54,6 +56,7 @@ import { LoggingModule } from './logging/logging.module';
     }),
     // ExceptionModule,
     LoggingModule,
+    BatchModule,
   ],
   controllers: [AppController],
   providers: [
@@ -70,6 +73,7 @@ import { LoggingModule } from './logging/logging.module';
       provide: APP_GUARD,
       useClass: ClassRolesGuard,
     },
+    TaskService,
   ],
 })
 export class AppModule {}
