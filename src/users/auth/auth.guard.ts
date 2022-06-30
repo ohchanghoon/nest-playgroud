@@ -37,7 +37,7 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
 
     request.user = {
-      name: 'changhoon',
+      name: 1,
       email: 'dhckdgns3@naver.com',
     };
     return true;

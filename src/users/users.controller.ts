@@ -8,6 +8,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -16,8 +17,16 @@ import { VerifyEmailDto } from './dto/verify-email.dto';
 import { AuthGuard } from './auth/auth.guard';
 import { AuthService } from 'src/auth/auth.service';
 import { UserData } from './users.decorate';
-interface User {
+import { IsString } from 'class-validator';
+// interface User {
+//   name: string;
+//   email: string;
+// }
+class UserEntity {
+  @IsString()
   name: string;
+
+  @IsString()
   email: string;
 }
 
@@ -28,10 +37,17 @@ export class UsersController {
     private authService: AuthService,
   ) {}
 
-  @Get()
-  getHello(@UserData('email') user: User) {
+  @Get('/with-pipe')
+  getHello(
+    @UserData(new ValidationPipe({ validateCustomDecorators: true }))
+    user: UserEntity,
+  ) {
     console.log(user);
   }
+  // @Get()
+  // getHello(@UserData('email') user: User) {
+  //   console.log(user);
+  // }
 
   @UseGuards(AuthGuard)
   @Get(':id')
