@@ -48,25 +48,25 @@ export class UsersController {
     private authService: AuthService,
   ) {}
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    if (+id < 1) {
-      // throw new HttpException(
-      //   {
-      //     message: 'id는 0보다 큰 정수여야합니다.',
-      //     foo: 'bar',
-      //     statusCode: HttpStatus.BAD_REQUEST,
-      //   },
-      //   HttpStatus.BAD_REQUEST,
-      // );
-      throw new BadRequestException(
-        'id는 0보다 큰 정수여야합니다.',
-        'id format exception',
-      );
-    }
-    return true;
-    // return this.usersService.findOne(+id);
-  }
+  // @Get(':id')
+  // findOne(@Param('id') id: string) {
+  //   if (+id < 1) {
+  //     // throw new HttpException(
+  //     //   {
+  //     //     message: 'id는 0보다 큰 정수여야합니다.',
+  //     //     foo: 'bar',
+  //     //     statusCode: HttpStatus.BAD_REQUEST,
+  //     //   },
+  //     //   HttpStatus.BAD_REQUEST,
+  //     // );
+  //     throw new BadRequestException(
+  //       'id는 0보다 큰 정수여야합니다.',
+  //       'id format exception',
+  //     );
+  //   }
+  //   return true;
+  //   // return this.usersService.findOne(+id);
+  // }
 
   @Get('/with-pipe')
   getHello(
@@ -80,11 +80,11 @@ export class UsersController {
   //   console.log(user);
   // }
 
-  // @UseGuards(AuthGuard)
-  // @Get(':id')
-  // async getUserInfo(@Headers() headers: any, @Param('id') userId: string) {
-  //   return this.usersService.getUserInfo(userId);
-  // }
+  @UseGuards(AuthGuard)
+  @Get(':id')
+  async getUserInfo(@Headers() headers: any, @Param('id') userId: string) {
+    return this.usersService.getUserInfo(userId);
+  }
 
   // @Post()
   // async createUser(@Body() dto: CreateUserDto): Promise<void> {

@@ -16,7 +16,8 @@ import {
   utilities as nestWinstonModuleUtilities,
   WinstonModule,
 } from 'nest-winston';
-import { ExceptionModule } from './exception/exception.module';
+// import { ExceptionModule } from './exception/exception.module';
+import { LoggingModule } from './logging/logging.module';
 
 @Module({
   imports: [
@@ -36,7 +37,6 @@ import { ExceptionModule } from './exception/exception.module';
     UsersAuthModule,
     EmailModule,
     AuthModule,
-    ExceptionModule,
     WinstonModule.forRoot({
       transports: [
         // transport 옵션 설정
@@ -52,7 +52,8 @@ import { ExceptionModule } from './exception/exception.module';
         }),
       ],
     }),
-    ExceptionModule,
+    // ExceptionModule,
+    LoggingModule,
   ],
   controllers: [AppController],
   providers: [
