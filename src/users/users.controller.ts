@@ -18,6 +18,8 @@ import { AuthGuard } from './auth/auth.guard';
 import { AuthService } from 'src/auth/auth.service';
 import { UserData } from './users.decorate';
 import { IsString } from 'class-validator';
+import { Roles } from './auth/roles.decorator';
+import { ClassRolesGuard } from './auth/classRoles.guard';
 // interface User {
 //   name: string;
 //   email: string;
@@ -29,7 +31,7 @@ class UserEntity {
   @IsString()
   email: string;
 }
-
+@Roles('user')
 @Controller('users')
 export class UsersController {
   constructor(
@@ -55,7 +57,13 @@ export class UsersController {
     return this.usersService.getUserInfo(userId);
   }
 
+  // @Post()
+  // async createUser(@Body() dto: CreateUserDto): Promise<void> {
+  //   const { name, email, password } = dto;
+  //   await this.usersService.createUser(name, email, password);
+  // }
   @Post()
+  @Roles('admin')
   async createUser(@Body() dto: CreateUserDto): Promise<void> {
     const { name, email, password } = dto;
     await this.usersService.createUser(name, email, password);
