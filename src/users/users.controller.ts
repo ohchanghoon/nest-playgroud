@@ -15,6 +15,7 @@ import {
   BadRequestException,
   HttpException,
   HttpStatus,
+  Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -27,6 +28,7 @@ import { IsString } from 'class-validator';
 import { Roles } from './auth/roles.decorator';
 import { ClassRolesGuard } from './auth/classRoles.guard';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
+import { Request } from 'express';
 // interface User {
 //   name: string;
 //   email: string;
@@ -117,10 +119,16 @@ export class UsersController {
     return await this.usersService.verifyEmail(signupVerifyToken);
   }
 
+  // @Post('/login')
+  // async login(@Body() dto: UserLoginDto): Promise<string> {
+  //   const { email, password } = dto;
+  //   return await this.usersService.login(email, password);
+  // }
   @Post('/login')
-  async login(@Body() dto: UserLoginDto): Promise<string> {
-    const { email, password } = dto;
-    return await this.usersService.login(email, password);
+  async login(@Req() req) {
+    console.log('req', req);
+
+    return await this.usersService.login(req.body);
   }
 
   @Delete(':id')

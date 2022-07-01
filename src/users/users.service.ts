@@ -98,20 +98,23 @@ export class UsersService {
     });
   }
 
-  async login(email: string, password: string): Promise<string> {
-    const user = await this.usersRepository.findOne({
-      where: { email, password },
-    });
-
-    if (!user) {
-      throw new NotFoundException('비회원임');
-    }
-    return this.authService.login({
-      id: user.id,
-      password: user.password,
-      email: user.email,
-    });
+  async login(user: any) {
+    const payload = { email: user.email, sub: user.id };
   }
+  // async login(email: string, password: string): Promise<string> {
+  //   const user = await this.usersRepository.findOne({
+  //     where: { email, password },
+  //   });
+
+  //   if (!user) {
+  //     throw new NotFoundException('비회원임');
+  //   }
+  //   return this.authService.login({
+  //     id: user.id,
+  //     password: user.password,
+  //     email: user.email,
+  //   });
+  // }
 
   async getUserInfo(userId: string) {
     const user = await this.usersRepository.findOne({ where: { id: userId } });

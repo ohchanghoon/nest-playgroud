@@ -5,18 +5,18 @@ import { Cron, Interval, Timeout } from '@nestjs/schedule';
 export class TaskService {
   private readonly logger = new Logger(TaskService.name);
 
-  @Cron('* * * * * *', { name: 'cronTask' })
-  handleCron() {
-    this.logger.log('Task Called');
-  }
+  // @Cron('* * * * * *', { name: 'cronTask' })
+  // handleCron() {
+  //   this.logger.log('Task Called');
+  // }
 
-  @Interval('intervalTask', 3000)
-  handleInterval() {
-    this.logger.debug('Interval Called');
-  }
+  // @Interval('intervalTask', 3000)
+  // handleInterval() {
+  //   this.logger.debug('Interval Called');
+  // }
 
-  @Timeout('timeoutTask', 7000)
-  handleTimeout() {
-    this.logger.debug('Timeout Called');
-  }
+  // @Timeout('timeoutTask', 7000)
+  // handleTimeout() {
+  //   this.logger.debug('Timeout Called');
+  // }
 }

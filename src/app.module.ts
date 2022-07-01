@@ -20,7 +20,10 @@ import {
 import { LoggingModule } from './logging/logging.module';
 import { BatchModule } from './batch/batch.module';
 import { TaskService } from './batch/task.service';
-
+import { HealthCheckController } from './health-check/health-check.controller';
+import { TerminusModule } from '@nestjs/terminus';
+import { HttpModule } from '@nestjs/axios';
+import { DogHealthIndicator } from './health-check/health-indicator';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
@@ -39,6 +42,7 @@ import { TaskService } from './batch/task.service';
     UsersAuthModule,
     EmailModule,
     AuthModule,
+    TerminusModule,
     WinstonModule.forRoot({
       transports: [
         // transport 옵션 설정
@@ -57,8 +61,9 @@ import { TaskService } from './batch/task.service';
     // ExceptionModule,
     LoggingModule,
     BatchModule,
+    HttpModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, HealthCheckController],
   providers: [
     AppService,
     {
@@ -74,6 +79,8 @@ import { TaskService } from './batch/task.service';
       useClass: ClassRolesGuard,
     },
     TaskService,
+    HealthCheckController,
+    DogHealthIndicator,
   ],
 })
 export class AppModule {}
