@@ -12,9 +12,6 @@ import {
   LoggerService,
   Inject,
   InternalServerErrorException,
-  BadRequestException,
-  HttpException,
-  HttpStatus,
   Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -26,13 +23,9 @@ import { AuthService } from 'src/auth/auth.service';
 import { UserData } from './users.decorate';
 import { IsString } from 'class-validator';
 import { Roles } from './auth/roles.decorator';
-import { ClassRolesGuard } from './auth/classRoles.guard';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
-import { Request } from 'express';
-// interface User {
-//   name: string;
-//   email: string;
-// }
+import { CreateUserCommand } from './command/create-user.command';
+import { CommandBus } from '@nestjs/cqrs';
 class UserEntity {
   @IsString()
   name: string;
@@ -48,27 +41,8 @@ export class UsersController {
     private readonly logger: LoggerService,
     private readonly usersService: UsersService,
     private authService: AuthService,
+    private commandBus: CommandBus,
   ) {}
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   if (+id < 1) {
-  //     // throw new HttpException(
-  //     //   {
-  //     //     message: 'id는 0보다 큰 정수여야합니다.',
-  //     //     foo: 'bar',
-  //     //     statusCode: HttpStatus.BAD_REQUEST,
-  //     //   },
-  //     //   HttpStatus.BAD_REQUEST,
-  //     // );
-  //     throw new BadRequestException(
-  //       'id는 0보다 큰 정수여야합니다.',
-  //       'id format exception',
-  //     );
-  //   }
-  //   return true;
-  //   // return this.usersService.findOne(+id);
-  // }
 
   @Get('/with-pipe')
   getHello(
@@ -77,10 +51,6 @@ export class UsersController {
   ) {
     console.log(user);
   }
-  // @Get()
-  // getHello(@UserData('email') user: User) {
-  //   console.log(user);
-  // }
 
   @UseGuards(AuthGuard)
   @Get(':id')
@@ -88,17 +58,12 @@ export class UsersController {
     return this.usersService.getUserInfo(userId);
   }
 
-  // @Post()
-  // async createUser(@Body() dto: CreateUserDto): Promise<void> {
-  //   const { name, email, password } = dto;
-  //   await this.usersService.createUser(name, email, password);
-  // }
   @Post()
   @Roles('admin')
   async createUser(@Body() dto: CreateUserDto): Promise<void> {
     const { name, email, password } = dto;
-    this.printLoggerServiceLog(dto);
-    await this.usersService.createUser(name, email, password);
+    const command = new CreateUserCommand(name, email, password);
+    return this.commandBus.execute(command);
   }
 
   private printLoggerServiceLog(dto) {
@@ -119,11 +84,6 @@ export class UsersController {
     return await this.usersService.verifyEmail(signupVerifyToken);
   }
 
-  // @Post('/login')
-  // async login(@Body() dto: UserLoginDto): Promise<string> {
-  //   const { email, password } = dto;
-  //   return await this.usersService.login(email, password);
-  // }
   @Post('/login')
   async login(@Req() req) {
     console.log('req', req);
